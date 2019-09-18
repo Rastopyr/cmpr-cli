@@ -1,4 +1,8 @@
 # cmpr-cli
+
+[![Build Status](https://travis-ci.org/Rastopyr/cmpr-cli.svg?branch=master)](https://travis-ci.org/Rastopyr/cmpr-cli)
+[![Coverage Status](https://coveralls.io/repos/github/Rastopyr/cmpr-cli/badge.svg?branch=master)](https://coveralls.io/github/Rastopyr/cmpr-cli?branch=master)
+
 Compare two numbers in CLI
 
 ## Usage

@@ -1,48 +1,64 @@
 #!/usr/bin/env node
 
 const chalk = require("chalk");
-const operators = require("../src");
-const { errorMessage } = require("../src/cli");
+const operators = require('../src');
 
-if (!process.argv[2]) {
-  process.stderr.write(errorMessage("Operator name is required"));
+const errorMessage = (messageText) => `${chalk.bgRed.white("Error:")} ${messageText}`;
 
-  process.exit(1);
-}
+const exitWithError = (error, code = 1) => {
+  process.stderr.write(error);
+  process.exit(code);
+};
 
-if (!process.argv[3] || !process.argv[4]) {
-  process.stderr.write(
-    errorMessage("Both values is required for compare operation")
-  );
+require('yargs')
+  .usage(
+    '$0 <comparator> <value> <comparable>',
+    'compare <value> and <comparable>. exit with code 1 if <comaprator> is false',
+    (yargs) => {
+      yargs.positional('comparator', {
+        describe: 'comparator name',
+        type: 'string',
+        choices: [
+          'gt',
+          'lt',
+          'lte',
+          'gte'
+        ]
+      });
 
-  process.exit(1);
-}
+      yargs.positional('value', {
+        describe: 'number, what need to compare',
+        type: 'number'
+      });
 
-const operatorName = process.argv[2];
-const value = Number(process.argv[3]);
-const comparable = Number(process.argv[4]);
+      yargs.positional('comparable', {
+        describe: 'number to be compared',
+        type: 'number'
+      });
+    }, (argv) => {
+      const operatorName = argv.comparator;
+      const value = Number(argv.value);
+      const comparable = Number(argv.comparable);
 
-if (isNaN(value) || isNaN(comparable)) {
-  process.stderr.write(errorMessage("Both values should be a number"));
+      if (isNaN(value) || isNaN(comparable)) {
+        exitWithError(
+          errorMessage("Both values should be a number")
+        );
+      }
 
-  process.exit(1);
-}
+      if (!operators[operatorName]) {
+        exitWithError(
+          errorMessage("Allowed only next comparators: gt, gte, lt, lte")
+        );
+      }
 
-const operator = operators[operatorName];
+      if (!operators[operatorName](value, comparable)) {
+        exitWithError(
+          errorMessage(
+            `${value} is not ${operators.names[operatorName]} ${comparable}`
+          )
+        );
+        process.exit(1);
+      }
+    }).help().argv
 
-if (!operator) {
-  process.stderr.write(
-    errorMessage("Allowed only next comparators: gt, gte, lt, lte")
-  );
-
-  process.exit(1);
-}
-
-if (!operator(value, comparable)) {
-  process.stderr.write(
-    errorMessage(
-      `${value} is not ${operators.names[operatorName]} ${comparable}`
-    )
-  );
-  process.exit(1);
-}

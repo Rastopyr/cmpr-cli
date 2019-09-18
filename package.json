@@ -9,10 +9,16 @@
   "bin": {
     "cmpr": "./bin/comparator.js"
   },
+  "scripts": {
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "test": "jest"
+  },
   "dependencies": {
-    "chalk": "^2.4.2"
+    "chalk": "^2.4.2",
+    "yargs": "^14.0.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.6",
     "jest": "^24.9.0"
   }
 }
